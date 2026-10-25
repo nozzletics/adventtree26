@@ -31,3 +31,7 @@ desktop.ini
 .DS_Store
 .vscode/
 .idea/
+
+# Manual: leftovers from the first render pass
+manual/f0?_*.png
+manual/labels_b2.json
