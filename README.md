@@ -36,7 +36,7 @@ springs in the top floor give the knob a detent at every day, and the dial on th
 | Variant | Script | Status |
 |---|---|---|
 | **Mech** (main model) | `3d_model/advent_tree_mech.py` | Drum, latches and magnets as described above. Covered by the assembly manual. |
-| **Motor kit** | `3d_model/advent_tree_motor.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver) and adds a mount for a 40 × 40 mm speaker. Not covered by the manual. |
+| **Motor kit** | `3d_model/advent_tree_motor.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver) and adds a mount for a 40 × 40 mm speaker. Not covered by the manual. Firmware: coming soon. |
 | **Hook** | `3d_model/advent_tree_generator.py` | Earlier design: each box sits on a hidden tray and is held by a hook on the tier's post; any box can be opened at any time. |
 
 ## Repository contents
@@ -57,6 +57,8 @@ manual/                          rendered manual figures (f01–f21) and label p
 ```
 
 STL and 3MF files are not stored in the repository. Export them from the `.blend` file.
+
+**Firmware for the motor kit: coming soon.**
 
 ## Working with the model
 
