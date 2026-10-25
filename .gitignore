@@ -1,0 +1,33 @@
+# Blender backups and autosaves
+*.blend1
+*.blend2
+*.blend3
+*.blend@
+*.autosave.blend
+quit.blend
+
+# Blender caches and render output
+blendcache_*/
+__pycache__/
+*.pyc
+render/
+renders/
+cache/
+
+# Slicer / 3D-print temporary output
+*.gcode
+*.bgcode
+
+# Firmware build output
+.pio/
+build/
+*.elf
+*.hex
+*.bin
+
+# OS and editor files
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
