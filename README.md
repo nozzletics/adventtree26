@@ -13,7 +13,9 @@ also a secret compartment; a two-part star sits on its tip.
 - about 275 mm across the bottom tier and about 45 cm tall without the star
 - the largest part (the base) needs a 220 × 220 mm print bed
 - three filament colours in the reference model: green, ivory and terra
-- the tiers, top floor and cap are joined with bayonet locks, so there are no screws in the structure
+- the tiers, top floor and cap are joined with bayonet locks; a small screw at each tier joint keeps
+  the tree from turning loose
+- a smaller 70 % version without the locking mechanism is included as well
 
 ## How it works
 
@@ -37,16 +39,22 @@ springs in the top floor give the knob a detent at every day, and the dial on th
 |---|---|---|
 | **Mech** (main model) | `3d_model/advent_tree_mech.py` | Drum, latches and magnets as described above. Covered by the assembly manual. |
 | **Motor kit** | `3d_model/advent_tree_motor.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver) and adds a mount for a 40 × 40 mm speaker. Not covered by the manual. Firmware: coming soon. |
+| **Mini / No Locking** | `3d_model/advent_tree_mini.py` | The mech tree scaled to 70 % without the drum, latches, knob and dial. The boxes are held by the magnets only, so any box can be opened at any time. Reuses `advent_tree_mech.py`. |
 | **Hook** | `3d_model/advent_tree_generator.py` | Earlier design: each box sits on a hidden tray and is held by a hook on the tier's post; any box can be opened at any time. |
 
 ## Repository contents
 
 ```
 AdventTree_Assembly_Manual.pdf   step-by-step assembly manual (mech variant, knob version)
+3mf_profiles/
+  AdventTree_nozzletics.3mf      print project for the full-size mech tree (Bambu Studio)
+  AdventTree_No_Locking.3mf      print project for the mini tree without locking (Bambu Studio)
 3d_model/
   AdventTree_nozzletics.blend    editable model with the generator scripts in the Text Editor
+  AdventTree_No_Locking.blend    editable model of the mini tree
   latch.blend                    latch part, separate working file
   advent_tree_mech.py            parametric generator, mech variant
+  advent_tree_mini.py            parametric generator, mini variant without locking
   advent_tree_motor.py           parametric generator, motor kit
   advent_tree_generator.py       parametric generator, hook variant
   AdventTree_Drawings.pdf        views, dimensioned section, part list, assembly
@@ -56,7 +64,8 @@ AdventTree_Assembly_Manual.pdf   step-by-step assembly manual (mech variant, kno
 manual/                          rendered manual figures (f01–f21) and label positions
 ```
 
-STL and 3MF files are not stored in the repository. Export them from the `.blend` file.
+Ready-to-print 3MF projects for both trees are in `3mf_profiles/` (made in Bambu Studio). Single STL
+files are not stored in the repository: export them from the `.blend` file.
 
 **Firmware for the motor kit: coming soon.**
 
@@ -81,12 +90,15 @@ See [`AdventTree_Assembly_Manual.pdf`](AdventTree_Assembly_Manual.pdf). In short
 1. Glue the tube magnets into the base and carriers, all with the same pole facing out.
 2. Build the tree from the bottom up: drum segment, latches on filament pins, then the next carrier
    locked with its bayonet, until all four tiers are done.
-3. Fit the top floor and the knob.
+   Once a tier is locked, drive a countersunk 2 × 10 mm wood screw at 45° through the upper tray
+   into the tube below so the joint cannot turn loose.
+3. Fit the top floor (it also gets a screw, in front of the dial dot) and the knob.
 4. Load the boxes one day at a time: turn the knob to the day, then push that box in.
-5. Put on the cap and the star.
+5. Put on the cap, using the arrow on the cap above box 1 to line it up, then fit the star.
 
 **Hardware:** 48 disc magnets 6 × 3 mm, 1.75 mm filament for the pins (24 × 17.7 mm and 1 × 9.5 mm), and
-optionally 24 self-tapping screws 2 × 6 mm as latch weights. You also need super glue, flush cutters and a
+4 countersunk wood screws 2 × 10 mm for the tier joints, and optionally 24 self-tapping screws
+2 × 6 mm as latch weights. You also need super glue, flush cutters and a
 file.
 
 ## Licensing
