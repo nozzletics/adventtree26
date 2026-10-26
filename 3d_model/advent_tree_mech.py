@@ -57,7 +57,13 @@ P = {
     "LT_GAP": 0.3,                                   # tail -> flange top at rest (locked lift of the tooth stays small)
     "LT_WIN_CLR": 0.4,                               # window in the box hub wall: clearance around the bar
     "LT_WIN_Z": (-2.8, 6.364), "LT_WIN_Y": (-2.4, 6.4),   # FIXED box window (rel. latch axis) - boxes already printed with it
-    "BAYO_MARK": True, "BAYO_MARK_DEG": -90.0, "BAYO_MARK_D": 0.6,   # assembly arrows: tube top + tray underside, aligned when the bayonet is locked
+    "BAYO_MARK": True, "BAYO_MARK_DEG": -90.0, "BAYO_MARK_D": 0.6,
+    # anti-turn screw at every tier joint (after the bayonet is locked): countersunk 2 x 10 wood screw at 45 deg through
+    # the upper tray (between its boxes 6/1, 12/7, 18/13) into the wall of the tube below; top floor: in front of the dial dot
+    "TIER_SCREW": True, "SCR_D": 1.3, "SCR_L": 10.0, "SCR_HEAD_D": 4.2, "SCR_HEAD_K": 1.45,
+    "SCR_J": 24.5, "SCR_TIP_R": 21.2,               # screw axis radius at the joint plane; radius of the screw tip (tube bore 19.8)
+    "SCR_PAD_R": 3.4, "SCR_TOP_PAD": False,         # top floor: False = plain SCR_D hole only (no pad, no countersink)
+    "CAP_ARROW": True, "CAP_ARROW_D": 0.7,          # debossed arrow on the cap above box 1 (shows how to put the cap on)   # assembly arrows: tube top + tray underside, aligned when the bayonet is locked
     "MAG_DZ_FIX": 9.9,                               # FIXED latch axis -> magnet centre (boxes already printed)
     "DRUM_SEAT": True, "DRUM_SEAT_CLR": 0.3,        # tube seat under the lowest flange (all tubes but the base)
     "FL_R": 19.3, "FL_T": 1.2, "NOTCH_D": 2.0, "NOTCH_WIN": 2.0,   # drum flange radius / thickness; notch depth; flat-bottom play +- deg
@@ -847,6 +853,51 @@ def bearing_bore(z_top, z_band_top):
             cuts.append(rings("_bu", [(ri, z_band_top), (ri, z_top)], 128))
     return cuts
 
+def screw_seam():
+    """seam between the last and the first box of a tier (6/1, 12/7, 18/13)"""
+    return theta(TIERS[0], 0) - pi / 6
+
+def screw_axis(z0):
+    """tip point and unit direction (towards the head) of the 45 deg screw in the r/z plane at angle 0; joint plane z0"""
+    rt = P["SCR_TIP_R"]; zt = z0 - (P["SCR_J"] - rt)
+    return Vector((rt, 0, zt)), Vector((math.sqrt(0.5), 0, math.sqrt(0.5)))
+
+def screw_cut(ang, z0, head=True):
+    """cutters: pilot hole SCR_D (0.3 past the tip), countersink + head clearance along the axis (head sunk below the surface)"""
+    tip, w = screw_axis(z0); L, k = P["SCR_L"], P["SCR_HEAD_K"]; rh = P["SCR_HEAD_D"] / 2; rp = P["SCR_D"] / 2
+    M = Matrix.Rotation(ang, 4, 'Z') @ Matrix.Translation(tip) @ Matrix.Rotation(rad(45), 4, 'Y')
+    if not head:
+        pil = rings("_scp", [(rp, -0.3), (rp, L + 8)], 24); pil.data.transform(M); return [pil]
+    pil = rings("_scp", [(rp, -0.3), (rp, L - k + 0.05)], 24)
+    hd = rings("_sch", [(rp, L - k), (rh, L), (rh, L + 8)], 32)
+    for o in (pil, hd): o.data.transform(M)
+    return [pil, hd]
+
+def screw_pad(ang, z0, z_floor):
+    """solid pad whose face (perpendicular to the screw) carries the head: for thin plates (top floor)"""
+    tip, w = screw_axis(z0); E = tip + w * P["SCR_L"]
+    p = Vector((w.z, 0, -w.x)); t_ = Y; R = P["SCR_PAD_R"]
+    ring = [E + (p * math.cos(a) + t_ * math.sin(a)) * R for a in [2 * pi * i / 24 for i in range(24)]]
+    o = hull("_spad", ring + [Vector((q.x, q.y, z_floor)) for q in ring])
+    o.data.transform(Matrix.Rotation(ang, 4, 'Z'))
+    return o
+
+def cap_arrow(td, rho_d, Hd):
+    """debossed arrow on the cap face above box 1 (segment 0), pointing down; cutter = arrow prism outside the inset skin"""
+    zs = P["TOP_SPLIT"]; R, tip = td["R"], P["TOP_TIP_R"]; sl = (R - tip) / (Hd - P["CBH"])
+    up = Vector((-sl, 0, 1)).normalized(); n = Vector((1, 0, sl)).normalized()
+    z_t = P["CBH"] + 4.0; c = Vector((rho_d(z_t), 0, z_t))
+    def pr(name, pts2):
+        return hull(name, [c + Y * u + up * v + n * e for u, v in pts2 for e in (-6.0, 3.0)])
+    head = pr("_ah", [(0, 0), (-2.8, 4.0), (2.8, 4.0)])
+    stem = pr("_as", [(-0.9, 3.8), (0.9, 3.8), (-0.9, 12.0), (0.9, 12.0)])
+    boolean(head, [stem], 'UNION')
+    d = P["CAP_ARROW_D"]
+    inner = hull("_ain", levels(td, [(zs - 1, rho_d(max(zs - 1, 0)), d), (P["CBH"], R, d), (Hd, tip, d)], inner_x=0.0))
+    boolean(head, [inner])
+    head.data.transform(Matrix.Rotation(theta(td, 0), 4, 'Z'))
+    return head
+
 def drum_seat_z():
     """height (tier-local) where the seat cone meets the bearing bore: parallel to the underside cone of the lowest
     drum flange, DRUM_SEAT_CLR (normal) below it"""
@@ -886,6 +937,11 @@ def build_carrier(t, merged=False):
         cut = socket(0, r=rs) + bearing_bore(top + P["SPIG_H"] + 1, P["BRG_TOP"])
         if P["BAYO_MARK"]: cut += mark_bottom()
     if P["BAYO_MARK"]: cut += mark_top(top)
+    if P.get("TIER_SCREW"):
+        # screw from the part above (tier k-1 tray, or the top floor for T1) into this tube's top
+        cut += screw_cut(rad(P["FRONT_DEG"]) if t["k"] == 0 else screw_seam(), top)
+        if not merged:   # this tray is screwed into the tube below (head in the tray, between boxes)
+            cut += screw_cut(screw_seam(), 0.0)
     for i in range(t["n"]):
         R_ = Matrix.Rotation(theta(t, i), 4, 'Z')
         if P["LATCH"]:
@@ -1215,8 +1271,12 @@ def build_top():
     boss = rings("_boss", [(rb, zs - 0.5), (rb, P["TOP_BOSS_H"] - 0.8), (rb - 0.8, P["TOP_BOSS_H"])], 128)
     boolean(fl, [boss], 'UNION')
     dc, dinl = build_dial(zs)
+    if P.get("TIER_SCREW") and P.get("SCR_TOP_PAD"):
+        a_s = rad(P["FRONT_DEG"])
+        boolean(fl, [screw_pad(a_s, 0.0, zs - 0.5)], 'UNION')
     boolean(fl, socket(0, r=rs) + bearing_bore(P["TOP_BOSS_H"] + 1, None)
-            + (mark_bottom() if P["BAYO_MARK"] else []))   # top bearing for the drum
+            + (mark_bottom() if P["BAYO_MARK"] else [])
+            + (screw_cut(rad(P["FRONT_DEG"]), 0.0, head=P.get("SCR_TOP_PAD", False)) if P.get("TIER_SCREW") else []))   # top bearing for the drum
     if P["DETENT"]:   # before the dial cut (EXACT result may not be clean enough for MANIFOLD)
         dcut, dadd = detent_parts()
         boolean(fl, dcut); boolean(fl, dadd, 'UNION')
@@ -1237,6 +1297,7 @@ def build_top():
             for x in (tb, dm): x.data.transform(Matrix.Rotation(theta(td, i), 4, 'Z'))
             tabs.append(tb); bpy.data.objects.remove(dm)        # decorative: no dimple (it would print as a flat ceiling here)
         boolean(o, tabs, 'UNION')
+    if P.get("CAP_ARROW"): boolean(o, [cap_arrow(td, rho_d, Hd)])
     return o, fl
 
 def star_geom():
