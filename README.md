@@ -38,7 +38,7 @@ springs in the top floor give the knob a detent at every day, and the dial on th
 | Variant | Script | Status |
 |---|---|---|
 | **Mech** (main model) | `3d_model/advent_tree_mech.py` | Drum, latches and magnets as described above. Covered by the assembly manual. |
-| **Motor kit** | `3d_model/advent_tree_motor.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver) and adds a mount for a 40 × 40 mm speaker. Not covered by the manual. Firmware: coming soon. |
+| **Motor kit (MK2)** | `3d_model/advent_tree_motor.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver, 10 : 1 gear train), an optical encoder, an ESP32-C3 with its own Wi-Fi web page and a 40 × 40 mm speaker for the melody. Covered by its own manual, `AdventTree_MotorKit_Manual.pdf`. Firmware in `firmware/`. |
 | **Mini / No Locking** | `3d_model/advent_tree_mini.py` | The mech tree scaled to 70 % without the drum, latches, knob and dial. The boxes are held by the magnets only, so any box can be opened at any time. Reuses `advent_tree_mech.py`. |
 | **Hook** | `3d_model/advent_tree_generator.py` | Earlier design: each box sits on a hidden tray and is held by a hook on the tier's post; any box can be opened at any time. |
 
@@ -46,9 +46,16 @@ springs in the top floor give the knob a detent at every day, and the dial on th
 
 ```
 AdventTree_Assembly_Manual.pdf   step-by-step assembly manual (mech variant, knob version)
+AdventTree_MotorKit_Manual.pdf   motor kit manual: printing, electronics, assembly, wiring, firmware
 3mf_profiles/
   AdventTree_nozzletics.3mf      print project for the full-size mech tree (Bambu Studio)
   AdventTree_No_Locking.3mf      print project for the mini tree without locking (Bambu Studio)
+  AdventTree_MotorKit.3mf        print project for the 7 motor kit parts (Bambu Studio)
+firmware/
+  AdventCalendar_ESP32C3/        Arduino sketch for the motor kit (ESP32-C3)
+    AdventCalendar_ESP32C3.ino   the firmware
+    AdventSample.h               the embedded melody
+    README.md                    hardware, wiring, flashing, calibration, settings, API
 3d_model/
   AdventTree_nozzletics.blend    editable model with the generator scripts in the Text Editor
   AdventTree_No_Locking.blend    editable model of the mini tree
@@ -64,10 +71,19 @@ AdventTree_Assembly_Manual.pdf   step-by-step assembly manual (mech variant, kno
 manual/                          rendered manual figures (f01–f21) and label positions
 ```
 
-Ready-to-print 3MF projects for both trees are in `3mf_profiles/` (made in Bambu Studio). Single STL
-files are not stored in the repository: export them from the `.blend` file.
+Ready-to-print 3MF projects for both trees and the motor kit are in `3mf_profiles/` (made in Bambu
+Studio). Single STL files are not stored in the repository: export them from the `.blend` file.
 
-**Firmware for the motor kit: coming soon.**
+## Motor kit
+
+The motor kit turns the mech tree into a motorised calendar controlled from a phone. Print the seven
+parts in `3mf_profiles/AdventTree_MotorKit.3mf` (the top floor comes from the main tree and is not in
+that file), then follow [`AdventTree_MotorKit_Manual.pdf`](AdventTree_MotorKit_Manual.pdf).
+
+The firmware is in [`firmware/AdventCalendar_ESP32C3/`](firmware/AdventCalendar_ESP32C3/). Open the
+`.ino` in Arduino IDE 2.x with the esp32 core 3.x and the AccelStepper library, select
+**Partition Scheme → Huge APP**, and upload. Its [README](firmware/AdventCalendar_ESP32C3/README.md)
+covers wiring, first start, calibration and troubleshooting.
 
 ## Working with the model
 
