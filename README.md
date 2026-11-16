@@ -38,7 +38,7 @@ springs in the top floor give the knob a detent at every day, and the dial on th
 | Variant | Script | Status |
 |---|---|---|
 | **Mech** (main model) | `3d_model/advent_tree_mech.py` | Drum, latches and magnets as described above. Covered by the assembly manual. |
-| **Motor kit (MK2)** | `3d_model/advent_tree_motor.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver, 10 : 1 gear train), an optical encoder, an ESP32-C3 with its own Wi-Fi web page and a 40 × 40 mm speaker for the melody. Covered by its own manual, `AdventTree_MotorKit_Manual.pdf`. Firmware in `firmware/`. |
+| **Motor kit (MK2)** | `3d_model/advent_tree_motor.py` + `3d_model/advent_tree_motor2.py` | Add-on for the mech variant: replaces the knob with a 28BYJ-48 stepper (ULN2003 driver, 10 : 1 gear train), an optical encoder, an ESP32-C3 with its own Wi-Fi web page and a 40 × 40 mm speaker for the melody. Covered by its own manual, `AdventTree_MotorKit_Manual.pdf`. Firmware in `firmware/`. |
 | **Mini / No Locking** | `3d_model/advent_tree_mini.py` | The mech tree scaled to 70 % without the drum, latches, knob and dial. The boxes are held by the magnets only, so any box can be opened at any time. Reuses `advent_tree_mech.py`. |
 | **Hook** | `3d_model/advent_tree_generator.py` | Earlier design: each box sits on a hidden tray and is held by a hook on the tier's post; any box can be opened at any time. |
 
@@ -62,7 +62,9 @@ firmware/
   latch.blend                    latch part, separate working file
   advent_tree_mech.py            parametric generator, mech variant
   advent_tree_mini.py            parametric generator, mini variant without locking
-  advent_tree_motor.py           parametric generator, motor kit
+  advent_tree_motor.py           parametric generator, motor kit (first version)
+  advent_tree_motor2.py          motor kit MK2: 10 : 1 gear train and encoder, run after the
+                                 mech and motor scripts
   advent_tree_generator.py       parametric generator, hook variant
   AdventTree_Drawings.pdf        views, dimensioned section, part list, assembly
   AdventTree_Inventory.csv       part list with sizes, filament colour and volume
